@@ -60,7 +60,7 @@ $user->addresses()->createMany([
 ]);
 
 // Find an existing address
-$address = app('addressable.address')->find(1);
+$address = Bkfdev\Addressable\Models\Address::find(1);
 
 // Update an existing address
 $address->update([
