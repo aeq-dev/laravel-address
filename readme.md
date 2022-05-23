@@ -89,10 +89,10 @@ $user->addresses;
 $user->addresses();
 
 // Scope Primary Addresses
-$primaryAddresses = app('addressable.address')->isPrimary()->get();
+$primaryAddresses = Bkfdev\Addressable\Models\Address::isPrimary()->get();
 
 // Scope Addresses in the given country
-$algerianAddresses = app('addressable.address')->inCountry('dz')->get();
+$algerianAddresses = Bkfdev\Addressable\Models\Address::inCountry('dz')->get();
 
 ```
 
