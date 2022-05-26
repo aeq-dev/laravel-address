@@ -13,7 +13,7 @@
     "keywords": ["Laravel", "LaravelAddress"],
     "require": {
         "illuminate/support": "~9",
-        "bkfdev/laravel-world": "^1.0.1",
+        "bkfdev/laravel-world": "*",
         "genealabs/laravel-model-caching": "^0.12.4"
     },
     "require-dev": {
