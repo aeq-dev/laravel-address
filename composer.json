@@ -12,7 +12,8 @@
     "homepage": "https://github.com/bkfdev/laravel-address",
     "keywords": ["Laravel", "LaravelAddress"],
     "require": {
-        "illuminate/support": "~9"
+        "illuminate/support": "~9",
+        "bkfdev/laravel-world": "@dev"
     },
     "require-dev": {
         "phpunit/phpunit": "~9.0",
