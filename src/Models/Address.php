@@ -10,7 +10,6 @@ use Bkfdev\World\Models\Country;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use GeneaLabs\LaravelModelCaching\Traits\Cachable;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -18,47 +17,17 @@ class Address extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    use Cachable;
 
-    protected $with = ['country', 'state', 'city'];
+    //protected $with = ['country', 'state', 'city'];
 
-    protected $fillable = [
-        'addressable_id',
-        'addressable_type',
-        'label',
-        'country_id',
-        'state_id',
-        'city_id',
-        'street',
-        'postal_code',
-        'latitude',
-        'longitude',
-        'is_primary',
-        'is_billing',
-        'is_shipping',
-    ];
+    protected $guarded = [];
 
 
     protected $casts = [
-        'addressable_id' => 'integer',
-        'addressable_type' => 'string',
-        'label' => 'string',
-        'street' => 'string',
-        'postal_code' => 'string',
-        'latitude' => 'float',
-        'longitude' => 'float',
         'is_primary' => 'boolean',
         'is_billing' => 'boolean',
         'is_shipping' => 'boolean',
-        'deleted_at' => 'datetime',
     ];
-
-    public function __construct(array $attributes = [])
-    {
-        $this->setTable(config('laravel-address.tables.addresses'));
-
-        parent::__construct($attributes);
-    }
 
     public function addressable(): MorphTo
     {
@@ -70,6 +39,18 @@ class Address extends Model
         return $builder->where('is_primary', true);
     }
 
+    public function scopeIsBilling(Builder $builder): Builder
+    {
+        return $builder->where('is_billing', true);
+    }
+    public function scopeIsShipping(Builder $builder): Builder
+    {
+        return $builder->where('is_shipping', true);
+    }
+    public function getFullNameAttribute(): string
+    {
+        return implode(' ', [$this->given_name, $this->family_name]);
+    }
     public function scopeInCountry(Builder $builder, string $countryId): Builder
     {
         return $builder->where('country_id', $countryId);
@@ -88,5 +69,32 @@ class Address extends Model
     public function city()
     {
         return $this->belongsTo(City::class);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function (self $address) {
+            $geocoding = config('laravel-address.geocoding.enabled');
+            $geocoding_api_key = config('laravel-address.geocoding.api_key');
+            if ($geocoding && $geocoding_api_key) {
+                $segments[] = $address->street;
+                $segments[] = sprintf('%s, %s %s', $address->city?->name, $address->state?->name, $address->postal_code);
+                $segments[] = country($address->country?->country_code)->getName();
+
+                $query = str_replace(' ', '+', implode(', ', $segments));
+                $geocode = json_decode(
+                    file_get_contents(
+                        "https://maps.google.com/maps/api/geocode/json?address={$query}&sensor=false&key={$geocoding_api_key}"
+                    )
+                );
+
+                if (count($geocode->results)) {
+                    $address->latitude = $geocode->results[0]->geometry->location->lat;
+                    $address->longitude = $geocode->results[0]->geometry->location->lng;
+                }
+            }
+        });
     }
 }
