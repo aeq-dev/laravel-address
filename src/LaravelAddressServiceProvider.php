@@ -56,10 +56,10 @@ class LaravelAddressServiceProvider extends ServiceProvider
         // Publishing the configuration file.
         $this->publishes([
             __DIR__ . '/../config/laravel-address.php' => config_path('laravel-address.php'),
-        ], 'laravel-address.config');
+        ], 'laravel-address');
 
         $this->publishes([
             __DIR__ . '/../database/migrations/' => database_path('migrations')
-        ], 'migrations');
+        ], 'laravel-address');
     }
 }
