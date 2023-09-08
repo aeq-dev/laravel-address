@@ -20,9 +20,11 @@ class CreateAddressesTable extends Migration
             $table->morphs('addressable');
             $table->string('label')->nullable();
             $table->string('company')->nullable();
-            $table->foreignId('country_id')->on('countries');
-            $table->foreignId('state_id')->on('states');
-            $table->foreignId('city_id');
+            $table->foreignId('country_id')->on('countries')->nullable();
+            $table->foreignId('state_id')->on('states')->nullable();
+            $table->string('state')->nullable();
+            $table->foreignId('city_id')->on('cities')->nullable();
+            $table->string('city')->nullable();
             $table->string('line1')->nullable();
             $table->string('line2')->nullable();
             $table->string('street')->nullable();
