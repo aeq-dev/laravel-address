@@ -13,14 +13,18 @@ class CreateAddressesTable extends Migration
         Schema::create(config('laravel-address.tables.addresses'), function (Blueprint $table) {
             // Columns
             $table->increments('id');
-            $table->string('given_name');
-            $table->string('family_name')->nullable;
+            $table->string('first_name');
+            $table->string('last_name')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('email')->nullable();
             $table->morphs('addressable');
             $table->string('label')->nullable();
-            $table->string('organization')->nullable();
+            $table->string('company')->nullable();
             $table->foreignId('country_id')->on('countries');
             $table->foreignId('state_id')->on('states');
             $table->foreignId('city_id');
+            $table->string('line1')->nullable();
+            $table->string('line2')->nullable();
             $table->string('street')->nullable();
             $table->string('postal_code')->nullable();
             $table->decimal('latitude', 10, 7)->nullable();
