@@ -13,7 +13,7 @@ class CreateAddressesTable extends Migration
         Schema::create(config('laravel-address.tables.addresses'), function (Blueprint $table) {
             // Columns
             $table->increments('id');
-            $table->string('first_name');
+            $table->string('first_name')->nullable();
             $table->string('last_name')->nullable();
             $table->string('phone')->nullable();
             $table->string('email')->nullable();
